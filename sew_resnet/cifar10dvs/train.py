@@ -39,6 +39,8 @@ def split_to_train_test_set(train_ratio: float, origin_dataset: torch.utils.data
             be included in train set, while the reset will be included in test set.
             If ``True``, this function will split samples in each classes randomly. The randomness is controlled by
             ``numpy.randon.seed``
+            使用这个函数就意味着均匀的划分了类别。 下面说的都是针对一个类别
+            这儿的意思是 如果为 False, 就按照划分比例顺序索引数据，如果为 True，就完全随机的索引数据，只确保比例正确。
     :type random_split: int
     :return: a tuple ``(train_set, test_set)``
     :rtype: tuple
@@ -46,18 +48,19 @@ def split_to_train_test_set(train_ratio: float, origin_dataset: torch.utils.data
     label_idx = []
     for i in range(num_classes):
         label_idx.append([])
-
+    # 经过这个for循环，就能将每个类别归到一个数组里面，且获取到他们在数组中的位置。
     for i, item in enumerate(origin_dataset):
         y = item[1]
         if isinstance(y, np.ndarray) or isinstance(y, torch.Tensor):
             y = y.item()
         label_idx[y].append(i)
+    # 如果为True，就随机打乱顺序
     train_idx = []
     test_idx = []
     if random_split:
         for i in range(num_classes):
             np.random.shuffle(label_idx[i])
-
+    #
     for i in range(num_classes):
         pos = math.ceil(label_idx[i].__len__() * train_ratio)
         train_idx.extend(label_idx[i][0: pos])

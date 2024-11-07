@@ -1,25 +1,30 @@
 import torch
 import torch.nn as nn
-from spikingjelly.cext.neuron import MultiStepParametricLIFNode
+# from spikingjelly.cext.neuron import MultiStepParametricLIFNode
+from spikingjelly.activation_based import monitor, neuron, functional, layer
 from spikingjelly.clock_driven import layer
 
 def conv3x3(in_channels, out_channels):
-    return nn.Sequential(
+    layers = nn.Sequential(
         layer.SeqToANNContainer(
             nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1, stride=1, bias=False),
             nn.BatchNorm2d(out_channels),
         ),
-        MultiStepParametricLIFNode(init_tau=2.0, detach_reset=True)
+        neuron.LIFNode(detach_reset=True)
+#         MultiStepParametricLIFNode(init_tau=2.0, detach_reset=True)
     )
+    functional.set_step_mode(layers, step_mode='m')
+    return layers
 
 def conv1x1(in_channels, out_channels):
-    return nn.Sequential(
+    layers = nn.Sequential(
         layer.SeqToANNContainer(
             nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
             nn.BatchNorm2d(out_channels),
         ),
-        MultiStepParametricLIFNode(init_tau=2.0, detach_reset=True)
-    )
+        neuron.LIFNode(detach_reset=True) )
+    functional.set_step_mode(layers, step_mode='m')
+    return layers
 
 class SEWBlock(nn.Module):
     def __init__(self, in_channels, mid_channels, connect_f=None):

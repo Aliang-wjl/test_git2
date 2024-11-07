@@ -1,0 +1,1 @@
+Namespace(T=20, device='cuda:0', b=16, epochs=64, j=4, data_dir='/raid/wfang/datasets/CIFAR10DVS', out_dir='../save_models', resume=None, amp=False, opt='SGD', lr=0.1, momentum=0.9, lr_scheduler='CosALR', step_size=32, gamma=0.1, T_max=64, model='SEWResNet', cnf='ADD', T_train=None, dts_cache='./dts_cache')
